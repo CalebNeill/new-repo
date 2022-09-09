@@ -66,7 +66,7 @@ Before moving on you might have noticed that the code block above has a name `an
 
 ```{r answer2, echo=TRUE, eval = FALSE}
 # Write your answer here
-Echo determines whether the code is included in the display along with the output. By chaning it to FALSE, any code written will not be displayed.
+Echo determines whether the code is included in the display along with the output. By changing it to FALSE, any code written will not be displayed.
 ```
 
 **Important**: Notice that `eval = FALSE` for many code chunks. When you complete the tasks. Make sure to change these to `TRUE` otherwise you will find your code does not run!
