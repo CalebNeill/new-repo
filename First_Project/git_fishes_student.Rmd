@@ -135,7 +135,7 @@ library(psych)
 
 ```{r summaryTab}
 # Drop irrelevant columns
-drop <- c("comment")
+drop <- c("comment", "loc")
 data <- data[!(names(data) %in% drop)]
 # Check spelling in species and treatment but also generate a summary table
 categories1 <- unique(data$species)
@@ -160,7 +160,7 @@ ft
 >**Question 5**: The new version of your Rmarkdown file should now be up on *GitHub*. In the browser window click on your most recent commit. Have a look at the file versioning system. You will notice two files side-by-side. Describe what you notice is being presented online. What do the red and green highlights mean?
 
 ```{r answer5, echo=TRUE, eval=FALSE}
-## Write your answer here....remember to use '#" in front of your text.
+## The red highlights indicate what the previous version of the file had written/empty. The green highlight is what was added to the latest version of the file.
 ```
 
 # **Task 5**
