@@ -26,7 +26,7 @@ Throughout we are also going to learn a bit more about how to format Rmarkdown d
 
 ```{r loadpacks, message=FALSE, results='hide'}
 # Install a load of packages that we'll use. I'll show you a shortcut that I love to use. Try using the p_load function in the "pacman" package. p_load will execute both the install.packages and library commands in one shot so they only need to be used once to install pacman itself.
-install.packages("pacman", repos = "http://cran.us.r-project.org")
+
 library(pacman)
 library(tidyr)
 
@@ -35,6 +35,11 @@ p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick) # basica
 
 ```
 
+```{r}
+library(flextable)
+library(psych)
+library(ggplot2)
+```
 # **Task 1**
 
 ### Provide the link to your GitHub Repo 
@@ -56,7 +61,6 @@ This task involves cloning your repository on your computer. Where should we pla
 
 ## Write your answer here.
 It is not a backup of your files, if you lose your computer you will lose any files not backed up on another storage.
-
 ```
 
 I'd usually suggest placing your repo in a cloud storage system like, *OneDrive*, *Dropbox*, or *GoogleDrive*. These will ensure that all your files are backed up and *GitHub* will provide a record of the detailed history. 
@@ -129,11 +133,6 @@ data %>% drop_na()
 
 Second, drop out irrelevant columns and check that there are no spelling issues in `species` and `treatment`. Create a table of summary data that includes: 1) the mean, 2) the standard error and 3) the sample sizes of unique fish across ALL six fish species for each treatment. This will also help you detect any spelling errors. You can use the R package [`flextable`](https://ardata-fr.github.io/flextable-book/) to print out the results in a nice neat format! If you haven't heard about `flextable` spend 10 or so minutes having a look at it's functionality. It's incredible! You'll use this for tables throughout.
 
-```{r}
-library(flextable)
-library(psych)
-library(ggplot2)
-```
 
 ```{r summaryTab}
 # Drop irrelevant columns
@@ -153,7 +152,6 @@ des
 
 # Use flextable to render the summary table in a tidy format
 ft <- flextable(des)
-~~~~~~~~~~~~~~~~~~~
 ft
 ```
 
@@ -204,7 +202,7 @@ Last question for this task. I promise! It's important to think very carefully a
 
 ```{r, answer6}
 ## Add your answer here
-
+Yes, you can adjust the github to be able to read and track the .png files to not be corrupted when attempting to open them.
 ```
 
 # **Task 6**
@@ -237,12 +235,14 @@ Resolving is easy. Decide on what changes you think are the best to proceed with
 
 Once you have figured out how to create and solve conflicts it's time to update the README file with a little more detail about your project and the general workflow. The *GitHub* webpage uses the README file as a sort of introduction to the project. 
 
-**Task**: Provide details about the workflow (i.e., which files are used, when and why) and write a detailed description of the data file used. Include the details about what the column means and which data file someone should use. 
+**Task**: Provide details about the workflow (i.e., which files are used, when and why) and write a detailed description of the data file used. Include the details about what the column means and which data file someone should use.
 
 Think about what you would need to know to make sure you can replicate a study. Provide these details so they are easy to find on the README.
 
 # **Task 8**
-There's not too much to do in this task on the coding front! You just need to create a *GitHub* issue and create a 'To Do' list on *GitHub* for you and your collaborator. 
+There's not too much to do in this task on the coding front! You just need to create a *GitHub* issue and create a 'To Do' list on *GitHub* for you and your collaborator.
+
+Done
 
 # **Task 9**
 Here, run some statistical tests to determine, for each species, whether the control vs high $CO^2$ treatments differ significantly from each other and in what direction. Provide the difference in means, their 95% confidence intervals, t-statistic, df and p-value. 
@@ -251,13 +251,46 @@ Here, run some statistical tests to determine, for each species, whether the con
 
 ```{r, stats, echo=TRUE, eval=TRUE}
 # Add your code here
+library(broom)
+library(purrr)
+
+#setting up the vector that will be used for the loop
+animal <- unique(data$species)
+test_output <- vector('list', length = length(animal))
+names(test_output) <- animal
+
+#loop to generate t.tests for each species treatment activity
+for (species in animal) {
+  species_data <- data[data$species == species,]
+  test_output[[species]] <- t.test(formula = activity ~ treatment,
+                                   data = species_data,
+                                   alternative = 'greater')
+}
+
+#Table to create more tidy summary of the t.tests
+tab <- map_df(test_output, tidy)
+tab$species <- c(animal)
+new_tab <- tab %>%
+  select(species, everything()) %>% subset(select = -c(estimate, statistic, method, alternative))
+
+colnames(new_tab) <- c("Species", "CO2 mean", "Control mean", "P value", "DF", "Lower Conf", "Upper Conf")
+
+#presenting the results
+print(test_output)
+new_tab
 ```
 
+
 ```{r, table1, echo=TRUE, eval=TRUE, tab.cap = "write a caption here"}
-# Using the resulting object created above, which should be a table with all the summary statistics, t, df and p-value for each species create a table. Note that there is a tab.cap argument in the chunk arguments. Write a caption here. 
+# Using the resulting object created above, which should be a table with all the summary statistics, t, df and p-value for each species create a table. Note that there is a tab.cap argument in the chunk arguments. Write a caption here.
+
+#I'm not sure what this means. Does it want the same table I made previously?
+
+new_tab
 ```
 
 Now that you have a table, you can reference it within a document. For example, you can make a call to Table \@ref(tab:table1) by referring to the name of the code chunk. When you knit the html it will create a hyperlink to your table and insert a legend above the table for you. How cool is that!?
+
 
 > **Question 8**: Pick one of your favorite species and write about the results to a reader. Write in the Rmarkdown file below what 1) the means and mean differences between control and acidification treatment is along with 2) the 95% confidence intervals of the difference
 
@@ -267,14 +300,13 @@ Moving forward on that you can also add in an object and whatever that objects v
 
 This is all **VERY** cool because that means if your code or data change than you can update your entire report very fast. It's also 100% reproducible. We know exactly where every single value in your report comes from. This is all pretty helpful when you want to check your code and report side-by-side. Now that you have a bit more detail fill in the following:
 
-Mean activity for `r "species name here"` in the control group was `r "add code to place mean for control"` (s / min) compared to the OA treatment group, which was `r "mean for acidificaton treatment"` (s / min). The difference between control and OA treatment means was `r "code mean difference bw treatment"` (s / min) (95% CI: `r "code for lower CI"` to `r "code for upper CI"`). 
+Mean activity for `r "lemon"` in the control group was `r "new_tab[which(new_tab$Species == "lemon"),c(3)]"` (s / min) compared to the OA treatment group, which was `r "new_tab[which(new_tab$Species == "lemon"),c(2)]"` (s / min). The difference between control and OA treatment means was `r "new_tab[which(new_tab$Species == "lemon"),c(2)] - new_tab[which(new_tab$Species == "lemon"),c(3)]"` (s / min) (95% CI: `r "new_tab[which(new_tab$Species == "lemon"),c(6)]"` to `r "new_tab[which(new_tab$Species == "lemon"),c(7)]"`). 
 
 Now, using what you just learnt, describe what the null hypothesis being tested was and provide statistical evidence (t-statistic, df, and p-value) to support your conclusion about whether we can reject the null hypothesis. Again, make sure you use in-line code. Write you answer below:
 
 **Write your answer here**
+The null hypothesis being tested was that acidification treatment has no effect on fish activity. Based on the results above about the lemon species of fish, the p-value given from the t.test was 'r "new_tab[which(new_tab$Species == "lemon"),c(4)]"', which is < 0.05 and therefore the null hypothesis can be rejected and from the values given, the treatment appears to have a positive effect on the activity of the fish.
 
-
-Re-analyse the data for a single species using permutations instead of a t-test. Do your results differ?
 
 >**Stretch Task**:  If you really want a challenge try doing permutation tests for each species. Again, loops, functions or tidyverse (or even combinations might help). 
 
