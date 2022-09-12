@@ -28,6 +28,7 @@ Throughout we are also going to learn a bit more about how to format Rmarkdown d
 # Install a load of packages that we'll use. I'll show you a shortcut that I love to use. Try using the p_load function in the "pacman" package. p_load will execute both the install.packages and library commands in one shot so they only need to be used once to install pacman itself.
 install.packages("pacman", repos = "http://cran.us.r-project.org")
 library(pacman)
+library(tidyr)
 
 # Install bookdown for rendering because we'll need this. While we're at it, lets also install /load the tidyverse
 p_load(bookdown, tidyverse, ggforce, flextable, latex2exp, png, magick) # basically just list all the packages you want here
@@ -171,7 +172,10 @@ Ignoring figures can be important because they take up quite a lot of space in y
 
 ```{r, prettyfig, fig.align='center', fig.cap="add a legend here"}
 # ggplot figure showing mean activity for each treatment (Control, OA) for each species.
-
+data %>% ggplot(mapping = aes(x = treatment, y = activity, colour = treatment)) +
+  geom_boxplot() +
+  facet_wrap(~ species) +
+  geom_jitter(width = 0.2, height = 0)
 
 ```
 
@@ -183,7 +187,7 @@ Now that you have the figure you may also want to write / save it as a separate 
 
 ```{r, savefig}
 # Use ggsave to save the figure
-
+ggsave(path = "./Users/caleb/OneDrive/Documents/GitHub/new-repo/First_Project/output/figures", filename = "treatment plot", plot = last_plot(), device = NULL)
 ```
 
 >**Question 6**: Given that you have added `output/figures/` to your `.gitignore` file describe what you notice about what you see in *GitHub Desktop*. 
