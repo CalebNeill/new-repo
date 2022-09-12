@@ -109,7 +109,7 @@ Let's say that you added a new data folder that was inside an output folder (i.e
 
 ```{r, write, eval = FALSE, echo=TRUE}
 
-path <- "./Users/caleb/OneDrive/Documents/GitHub/new-repo/First_Project/output_data"
+path <- "/Users/caleb/OneDrive/Documents/GitHub/new-repo/First_Project/output_data"
 
 write_csv(data, file = path)
 
@@ -132,6 +132,7 @@ Second, drop out irrelevant columns and check that there are no spelling issues 
 ```{r}
 library(flextable)
 library(psych)
+library(ggplot2)
 ```
 
 ```{r summaryTab}
@@ -187,13 +188,14 @@ Now that you have the figure you may also want to write / save it as a separate 
 
 ```{r, savefig}
 # Use ggsave to save the figure
-ggsave(path = "./Users/caleb/OneDrive/Documents/GitHub/new-repo/First_Project/output/figures", filename = "treatment plot", plot = last_plot(), device = NULL)
+ggsave(filename = paste("graph1", ".jpeg"), plot = last_plot(), path = "/Users/caleb/OneDrive/Documents/GitHub/new-repo/First_Project/output/figures", device = "png")
 ```
 
 >**Question 6**: Given that you have added `output/figures/` to your `.gitignore` file describe what you notice about what you see in *GitHub Desktop*. 
 
 ```{r}
 ## Write your answer here
+There appears to be no folder with output/figures and no graph saved into github due to the .gitignore file. There was an error in pushing to origin, which was resolved by ignoring the output/figures folder which I am assuming is was the purpose of gitignore.
 ```
 
 Last question for this task. I promise! It's important to think very carefully about what you track and ignore.
@@ -202,6 +204,7 @@ Last question for this task. I promise! It's important to think very carefully a
 
 ```{r, answer6}
 ## Add your answer here
+
 ```
 
 # **Task 6**
@@ -211,6 +214,7 @@ Now, lets create a new figure in the code block below that simplifies the one pr
 
 ```{r, collabFig, echo=TRUE, eval=TRUE}
 # You want to make changes to your collaborators figure in Task 5. Maybe you want to create a figure that focuses only on three fish species instead of the 5. More specifically, chromis, lemon, and acantho. Add code here to revise their figure to do that.
+data %>% filter(species %in% c("chromis", "lemon", "acantho")) %>% ggplot(mapping = aes(x = treatment, y = activity, colour = treatment)) + geom_boxplot() + facet_wrap(~ species) + geom_jitter(width = 0.2, height = 0)
 ```
 
 
